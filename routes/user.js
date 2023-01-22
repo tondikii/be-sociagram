@@ -1,0 +1,33 @@
+const KoaRouter = require("koa-router");
+const {
+  signUp,
+  signIn,
+  find,
+  detail,
+  editProfile,
+  followUnFollow,
+} = require("../controllers/user");
+const authentication = require("../middlewares/authentication");
+const multerImage = require("../middlewares/multerImage");
+
+const router = new KoaRouter({prefix: "/users"});
+
+router.post("/signUp", signUp);
+router.post("/signIn", signIn);
+
+router.use(authentication);
+router.get("/find", find);
+router.get("/detail", detail);
+router.put(
+  "/edit",
+  multerImage.fields([
+    {
+      name: "file",
+      maxCount: 1,
+    },
+  ]),
+  editProfile
+);
+router.put("/follow", followUnFollow);
+
+module.exports = router;
