@@ -48,6 +48,7 @@ const signIn = async (ctx) => {
     ctx.body = {
       data: {
         accessToken: token,
+        ...user?.dataValues,
       },
       error: "",
     };
@@ -77,12 +78,11 @@ const find = async (ctx) => {
 const detail = async (ctx) => {
   try {
     const {request} = ctx;
-    const {
-      user: {userId},
-    } = request;
-
-    const foundUser = await User.findOne({where: {userId}});
-
+    const {username} = request.params;
+    const foundUser = await User.findOne({where: {username}});
+    if (!foundUser) {
+      throw {name: "Invalid Profile"};
+    }
     ctx.status = 200;
     ctx.body = {data: foundUser, error: ""};
     return ctx;
@@ -101,6 +101,15 @@ const editProfile = async (ctx) => {
     const file = files?.file;
     let avatar = request.body?.avatar;
     const {name, username, bio, gender} = request.body;
+    console.log({
+      userId,
+      avatar,
+      name,
+      username,
+      bio,
+      gender,
+      file,
+    });
     if (file) {
       const imagekit = new ImageKit({
         publicKey: public_key,

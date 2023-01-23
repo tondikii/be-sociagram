@@ -17,7 +17,7 @@ router.post("/signIn", signIn);
 
 router.use(authentication);
 router.get("/find", find);
-router.get("/detail", detail);
+router.get("/:username", detail);
 router.put(
   "/edit",
   multerImage.fields([

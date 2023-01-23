@@ -47,6 +47,13 @@ const errorsHandler = (err, ctx) => {
         error: "File type avatar must be image",
       };
       return ctx;
+    case "Invalid Profile":
+      ctx.status = 400;
+      ctx.body = {
+        data: ctx?.body?.data || null,
+        error: "Username not found",
+      };
+      return ctx;
     case "MulterError":
       ctx.status = 400;
       ctx.body = {
