@@ -101,15 +101,6 @@ const editProfile = async (ctx) => {
     const file = files?.file;
     let avatar = request.body?.avatar;
     const {name, username, bio, gender} = request.body;
-    console.log({
-      userId,
-      avatar,
-      name,
-      username,
-      bio,
-      gender,
-      file,
-    });
     if (file) {
       const imagekit = new ImageKit({
         publicKey: public_key,
@@ -148,21 +139,35 @@ const followUnFollow = async (ctx) => {
       user: {userId, following},
     } = request;
     const {userId: targetUserId} = request.body;
+    const foundOtherUser = await User.findOne({where: {userId: targetUserId}});
     const isFollowing = following.find((id) => id === targetUserId);
-    let payload = [];
+    let payloadFollowing = [];
+    let payloadFollowers = foundOtherUser?.followers || [];
     if (isFollowing) {
-      payload = [...following].filter((id) => id !== targetUserId);
+      payloadFollowing = [...payloadFollowing].filter(
+        (id) => id !== targetUserId
+      );
+      payloadFollowers = [...payloadFollowers].filter((id) => id !== userId);
     } else {
-      payload = [...following, targetUserId];
+      payloadFollowing = [...payloadFollowing, targetUserId];
+      payloadFollowers = [...payloadFollowers, userId];
     }
     const updatedUser = await User.update(
       {
-        following: payload,
+        following: payloadFollowing,
       },
       {where: {userId}, returning: true, plain: true}
     );
-    ctx.body = {data: updatedUser[1], error: ""};
-    return ctx;
+    if (updatedUser) {
+      const updatedOtherUser = await User.update(
+        {
+          followers: payloadFollowers,
+        },
+        {where: {userId: targetUserId}, returning: true, plain: true}
+      );
+      ctx.body = {data: updatedOtherUser[1], error: ""};
+      return ctx;
+    }
   } catch (err) {
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
