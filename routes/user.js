@@ -6,6 +6,8 @@ const {
   detail,
   editProfile,
   followUnFollow,
+  followers,
+  following,
 } = require("../controllers/user");
 const authentication = require("../middlewares/authentication");
 const multerImage = require("../middlewares/multerImage");
@@ -17,6 +19,8 @@ router.post("/signIn", signIn);
 
 router.use(authentication);
 router.get("/find", find);
+router.get("/followers/:username", followers);
+router.get("/following/:username", following);
 router.get("/:username", detail);
 router.put(
   "/edit",

@@ -36,6 +36,13 @@ const signIn = async (ctx) => {
     const {email, password} = request.body;
     if (!email || !password) throw {name: "Bad Request Sign In"};
     const user = await User.findOne({where: {email}});
+    // await User.update(
+    //   {
+    //     followers: [],
+    //     following: [],
+    //   },
+    //   {where: {email}}
+    // );
     if (!user) throw {name: "Invalid Email"};
     if (!comparePassword(password, user.password))
       throw {name: "Invalid Password"};
@@ -174,4 +181,51 @@ const followUnFollow = async (ctx) => {
   }
 };
 
-module.exports = {signUp, signIn, find, editProfile, followUnFollow, detail};
+const followers = async (ctx) => {
+  try {
+    const {request} = ctx;
+    const {username} = request.params;
+    const targetUser = await User.findOne({where: {username}});
+    let followers = targetUser?.followers;
+    const users = await User.findAll();
+    const filteredUsers = users.filter(({dataValues}) =>
+      followers.find((id) => id === dataValues?.userId)
+    );
+    console.log({filteredUsers});
+    ctx.status = 200;
+    ctx.body = {data: filteredUsers};
+  } catch (error) {
+    ctx.body = {data: {}};
+    ctx.app.emit("error", err, ctx);
+  }
+};
+
+const following = async (ctx) => {
+  try {
+    const {request} = ctx;
+    const {username} = request.params;
+    const targetUser = await User.findOne({where: {username}});
+    let following = targetUser?.following;
+    const users = await User.findAll();
+    const filteredUsers = users.filter(({dataValues}) =>
+      following.find((id) => id === dataValues?.userId)
+    );
+    console.log({filteredUsers});
+    ctx.status = 200;
+    ctx.body = {data: filteredUsers};
+  } catch (error) {
+    ctx.body = {data: {}};
+    ctx.app.emit("error", err, ctx);
+  }
+};
+
+module.exports = {
+  signUp,
+  signIn,
+  find,
+  editProfile,
+  followUnFollow,
+  detail,
+  followers,
+  following,
+};
