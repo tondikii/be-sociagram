@@ -5,7 +5,7 @@ const authentication = require("../middlewares/authentication");
 const router = new KoaRouter({prefix: "/posts"});
 
 router.use(authentication);
-router.get("/:username", fetchPosts);
+router.get("/", fetchPosts);
 router.post("/create", createPost);
 
 module.exports = router;

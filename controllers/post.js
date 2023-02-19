@@ -38,7 +38,7 @@ const createPost = async (ctx, next) => {
 const fetchPosts = async (ctx, next) => {
   try {
     const {request} = ctx;
-    const {username} = request.params;
+    const {username} = request.query;
     const limit = request.query.limit || 12; // limit length of the posts
     let page = request.query.page || 1;
     if (page < 1) page = 1; // handle if page received less than 1
