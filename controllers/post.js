@@ -10,7 +10,7 @@ const createPost = async (ctx, next) => {
     } = request;
     let postId = "";
     const {files, caption} = request.body;
-    if (UserId && files && caption) {
+    if (UserId && files) {
       postId = uuidGenerator();
     }
     console.log({
