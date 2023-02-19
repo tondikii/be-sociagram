@@ -34,15 +34,10 @@ const signIn = async (ctx) => {
   try {
     const {request} = ctx;
     const {email, password} = request.body;
+    console.log({email, password});
     if (!email || !password) throw {name: "Bad Request Sign In"};
     const user = await User.findOne({where: {email}});
-    // await User.update(
-    //   {
-    //     followers: [],
-    //     following: [],
-    //   },
-    //   {where: {email}}
-    // );
+    console.log({user});
     if (!user) throw {name: "Invalid Email"};
     if (!comparePassword(password, user.password))
       throw {name: "Invalid Password"};
@@ -60,6 +55,7 @@ const signIn = async (ctx) => {
       error: "",
     };
   } catch (err) {
+    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }

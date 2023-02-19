@@ -16,6 +16,7 @@ const authentication = async (ctx, next) => {
     if (!user) throw {name: "Unauthorized Middleware"};
     request.user = {
       userId: user.userId,
+      UserId: user.id,
       followers: user.followers,
       following: user.following,
     };
