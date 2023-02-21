@@ -13,12 +13,6 @@ const createPost = async (ctx, next) => {
     if (UserId && files) {
       postId = uuidGenerator();
     }
-    console.log({
-      UserId,
-      files,
-      caption,
-      postId,
-    });
     const post = await Post.create({
       UserId,
       files,
@@ -71,4 +65,31 @@ const fetchPosts = async (ctx, next) => {
   }
 };
 
-module.exports = {createPost, fetchPosts};
+const likeUnLike = async (ctx) => {
+  try {
+    const {request} = ctx;
+    const {
+      user: {userId},
+    } = request;
+    const {postId} = request.body;
+    const foundPost = await Post.findOne({where: {postId}});
+    let likes = foundPost?.likes || [];
+    const isLiked = likes.find((id) => id === userId);
+    if (isLiked) {
+      likes = [...likes.filter((id) => id !== userId)];
+    } else {
+      likes.push(userId);
+    }
+    const updatedPost = await Post.update(
+      {likes},
+      {where: {postId}, returning: true, plain: true}
+    );
+    ctx.body = {data: updatedPost[1], error: ""};
+    return ctx;
+  } catch (err) {
+    ctx.body = {data: {}};
+    ctx.app.emit("error", err, ctx);
+  }
+};
+
+module.exports = {createPost, fetchPosts, likeUnLike};

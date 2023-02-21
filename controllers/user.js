@@ -68,7 +68,6 @@ const find = async (ctx) => {
     const users = await User.findAndCountAll({
       where: {username: {[Op.iLike]: `%${search}%`}},
     });
-
     ctx.status = 200;
     ctx.body = {data: users, error: ""};
     return ctx;
