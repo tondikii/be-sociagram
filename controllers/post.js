@@ -1,6 +1,5 @@
 const {Post, User} = require("../models");
 const {uuidGenerator} = require("../helpers/uuid");
-const {Op} = require("sequelize");
 
 const createPost = async (ctx, next) => {
   try {
@@ -57,7 +56,7 @@ const fetchPosts = async (ctx, next) => {
       order: [["createdAt", "DESC"]],
     });
     ctx.body = {data: posts, error: ""};
-    ctx.status = 201;
+    ctx.status = 200;
   } catch (err) {
     console.log({err});
     ctx.body = {data: {}};
@@ -85,6 +84,7 @@ const likeUnLike = async (ctx) => {
       {where: {postId}, returning: true, plain: true}
     );
     ctx.body = {data: updatedPost[1], error: ""};
+    ctx.status = 200;
     return ctx;
   } catch (err) {
     ctx.body = {data: {}};
