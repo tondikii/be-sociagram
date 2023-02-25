@@ -33,7 +33,6 @@ const fetchPostComments = async (ctx) => {
         },
       ],
       where: {PostId: +PostId},
-      order: [["createdAt", "DESC"]],
     });
     ctx.body = {data: postComments, error: ""};
     ctx.status = 200;
