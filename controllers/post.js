@@ -92,4 +92,22 @@ const likeUnLike = async (ctx) => {
   }
 };
 
-module.exports = {createPost, fetchPosts, likeUnLike};
+const postsLiked = async (ctx) => {
+  try {
+    const {
+      user: {userId},
+    } = ctx.request;
+    const posts = await Post.findAll();
+    const filteredPosts = posts.filter(({dataValues}) =>
+      dataValues?.likes.find((id) => id === userId)
+    );
+    console.log({filteredPosts, userId});
+    ctx.status = 200;
+    ctx.body = {data: filteredPosts};
+  } catch (error) {
+    ctx.body = {data: {}};
+    ctx.app.emit("error", err, ctx);
+  }
+};
+
+module.exports = {createPost, fetchPosts, likeUnLike, postsLiked};
