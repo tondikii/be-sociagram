@@ -1,4 +1,4 @@
-const {Post, User} = require("../models");
+const {Post, User, PostComment} = require("../models");
 const {uuidGenerator} = require("../helpers/uuid");
 
 const createPost = async (ctx, next) => {
@@ -51,6 +51,7 @@ const fetchPosts = async (ctx, next) => {
         {
           model: User,
         },
+        {model: PostComment},
       ],
       where,
       order: [["createdAt", "DESC"]],
