@@ -97,7 +97,13 @@ const postsLiked = async (ctx) => {
     const {
       user: {userId},
     } = ctx.request;
-    const posts = await Post.findAll();
+    const posts = await Post.findAll({
+      include: [
+        {
+          model: User,
+        },
+      ],
+    });
     const filteredPosts = posts.filter(({dataValues}) =>
       dataValues?.likes.find((id) => id === userId)
     );
