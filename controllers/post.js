@@ -103,6 +103,7 @@ const postsLiked = async (ctx) => {
         {
           model: User,
         },
+        {model: PostComment},
       ],
     });
     const filteredPosts = posts.filter(({dataValues}) =>
