@@ -4,14 +4,14 @@ const createComment = async (ctx) => {
   try {
     const {request} = ctx;
     const {
-      user: {UserId},
+      user: {id},
     } = request;
     const {PostId, comment} = request.body;
     ctx.body = "success";
     const createdComment = await PostComment.create({
       PostId,
       comment,
-      UserId: UserId,
+      UserId: id,
     });
     ctx.body = {data: createdComment, error: []};
     return ctx;

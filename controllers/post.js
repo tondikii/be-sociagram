@@ -4,11 +4,11 @@ const createPost = async (ctx, next) => {
   try {
     const {request} = ctx;
     const {
-      user: {UserId},
+      user: {id},
     } = request;
     const {files, caption} = request.body;
     const post = await Post.create({
-      UserId,
+      UserId: id,
       files,
       caption,
       likes: [],
@@ -16,7 +16,6 @@ const createPost = async (ctx, next) => {
     ctx.body = {data: post, error: []};
     ctx.status = 201;
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -25,19 +24,15 @@ const createPost = async (ctx, next) => {
 const fetchPosts = async (ctx, next) => {
   try {
     const {request} = ctx;
-    const {username} = request.query;
-    const limit = request.query.limit || 12; // limit length of the posts
+    const {username, limit = 12} = request.query;
     let page = request.query.page || 1;
     if (page < 1) page = 1; // handle if page received less than 1
     const offset = (page - 1) * limit; // indeks start from
     const where = {};
     if (username) {
-      console.log({username});
       const foundUser = await User.findOne({where: {username}});
-      console.log({foundUser});
       where.UserId = foundUser?.id || 0;
     }
-    console.log({where});
     const posts = await Post.findAndCountAll({
       limit,
       offset,
@@ -53,7 +48,6 @@ const fetchPosts = async (ctx, next) => {
     ctx.body = {data: posts, error: ""};
     ctx.status = 200;
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -63,19 +57,18 @@ const likeUnLike = async (ctx) => {
   try {
     const {request} = ctx;
     const {
-      user: {UserId},
+      user: {id: UserId},
     } = request;
     const {PostId} = request.body;
-    const foundPostLike = await PostLike.findOne({where: {PostId}});
-
+    const foundPostLike = await PostLike.findOne({where: {PostId, UserId}});
     if (foundPostLike) {
-      const deletedPostLike = await PostLike.destroy({
+      await PostLike.destroy({
         where: {
-          id: foundPost?.id,
+          id: foundPostLike?.id,
         },
         force: true,
       });
-      ctx.body = {data: deletedPostLike, error: []};
+      ctx.body = {data: null, error: []};
     } else {
       const createdPostLike = await PostLike.create({
         PostId,
@@ -84,6 +77,7 @@ const likeUnLike = async (ctx) => {
       ctx.body = {data: createdPostLike, error: []};
     }
   } catch (err) {
+    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -92,23 +86,27 @@ const likeUnLike = async (ctx) => {
 const postsLiked = async (ctx) => {
   try {
     const {
-      user: {userId},
+      user: {id},
     } = ctx.request;
-    const posts = await Post.findAll({
+    const posts = await PostLike.findAll({
       include: [
         {
-          model: User,
+          model: Post,
+          include: [
+            {
+              model: PostComment,
+            },
+          ],
         },
-        {model: PostComment},
       ],
+      where: {UserId: id},
     });
-    const filteredPosts = posts.filter(({dataValues}) =>
-      dataValues?.likes.find((id) => id === userId)
-    );
-    console.log({filteredPosts, userId});
+    // const filteredPosts = posts.filter(({dataValues}) =>
+    //   dataValues?.likes.find((id) => id === userId)
+    // );
     ctx.status = 200;
-    ctx.body = {data: filteredPosts};
-  } catch (error) {
+    ctx.body = {data: posts};
+  } catch (err) {
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }

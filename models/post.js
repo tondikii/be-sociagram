@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Post.belongsTo(models.User);
       Post.hasMany(models.PostComment);
+      Post.hasMany(models.PostLike);
     }
   }
   Post.init(
@@ -18,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       files: {type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false},
       caption: {type: DataTypes.STRING, allowNull: false},
       UserId: {type: DataTypes.STRING, allowNull: false},
-      likes: {type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false},
     },
     {
       sequelize,
