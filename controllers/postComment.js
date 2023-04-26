@@ -7,7 +7,6 @@ const createComment = async (ctx) => {
       user: {UserId},
     } = request;
     const {PostId, comment} = request.body;
-    console.log({payload: {PostId, comment, UserId: UserId}});
     ctx.body = "success";
     const createdComment = await PostComment.create({
       PostId,

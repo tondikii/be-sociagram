@@ -15,8 +15,7 @@ const authentication = async (ctx, next) => {
     const user = await User.findByPk(payload.id);
     if (!user) throw {name: "Unauthorized Middleware"};
     request.user = {
-      userId: user.userId,
-      UserId: user.id,
+      id: user.id,
       followers: user.followers,
       following: user.following,
     };

@@ -15,14 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Post.init(
     {
-      postId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: {msg: "Post Id is required"},
-          notEmpty: {msg: "Post Id cannot be empty"},
-        },
-      },
       files: {type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false},
       caption: {type: DataTypes.STRING, allowNull: false},
       UserId: {type: DataTypes.STRING, allowNull: false},

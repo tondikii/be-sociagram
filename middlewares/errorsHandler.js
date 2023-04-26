@@ -1,4 +1,5 @@
 const errorsHandler = (err, ctx) => {
+  console.log({err});
   switch (err.name) {
     case "SequelizeValidationError":
     case "SequelizeUniqueConstraintError":
@@ -30,6 +31,14 @@ const errorsHandler = (err, ctx) => {
     case "Invalid Password":
       ctx.status = 400;
       ctx.body = {data: ctx?.body?.data || null, error: "Invalid password"};
+      return ctx;
+    case "User Not Found":
+      ctx.status = 400;
+      ctx.body = {data: ctx?.body?.data || null, error: "User not found"};
+      return ctx;
+    case "Invalid User":
+      ctx.status = 400;
+      ctx.body = {data: ctx?.body?.data || null, error: "Invalid user"};
       return ctx;
     case "Missing Authorization":
       ctx.status = 401;

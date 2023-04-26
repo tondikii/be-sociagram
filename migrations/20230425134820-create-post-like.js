@@ -2,20 +2,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Posts", {
+    await queryInterface.createTable("PostLikes", {
       id: {
         allowNull: false,
         autoIncrement: true,
+        primaryKey: true,
         type: Sequelize.INTEGER,
-        unique: true,
-      },
-      files: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: false,
-      },
-      caption: {
-        type: Sequelize.STRING,
-        allowNull: false,
       },
       UserId: {
         allowNull: false,
@@ -24,9 +16,12 @@ module.exports = {
         onUpdate: "cascade",
         onDelete: "cascade",
       },
-      likes: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+      PostId: {
         allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {model: "Posts", key: "id"},
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +34,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Posts");
+    await queryInterface.dropTable("PostLikes");
   },
 };

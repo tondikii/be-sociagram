@@ -17,14 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      userId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: {msg: "User Id is required"},
-          notEmpty: {msg: "User Id cannot be empty"},
-        },
-      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -70,10 +62,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       followers: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
       following: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
     },
     {

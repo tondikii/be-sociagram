@@ -1,5 +1,4 @@
-const {Post, User, PostComment} = require("../models");
-const {uuidGenerator} = require("../helpers/uuid");
+const {Post, User, PostComment, PostLike} = require("../models");
 
 const createPost = async (ctx, next) => {
   try {
@@ -7,16 +6,11 @@ const createPost = async (ctx, next) => {
     const {
       user: {UserId},
     } = request;
-    let postId = "";
     const {files, caption} = request.body;
-    if (UserId && files) {
-      postId = uuidGenerator();
-    }
     const post = await Post.create({
       UserId,
       files,
       caption,
-      postId,
       likes: [],
     });
     ctx.body = {data: post, error: []};
@@ -69,24 +63,26 @@ const likeUnLike = async (ctx) => {
   try {
     const {request} = ctx;
     const {
-      user: {userId},
+      user: {UserId},
     } = request;
-    const {postId} = request.body;
-    const foundPost = await Post.findOne({where: {postId}});
-    let likes = foundPost?.likes || [];
-    const isLiked = likes.find((id) => id === userId);
-    if (isLiked) {
-      likes = [...likes.filter((id) => id !== userId)];
+    const {PostId} = request.body;
+    const foundPostLike = await PostLike.findOne({where: {PostId}});
+
+    if (foundPostLike) {
+      const deletedPostLike = await PostLike.destroy({
+        where: {
+          id: foundPost?.id,
+        },
+        force: true,
+      });
+      ctx.body = {data: deletedPostLike, error: []};
     } else {
-      likes.push(userId);
+      const createdPostLike = await PostLike.create({
+        PostId,
+        UserId,
+      });
+      ctx.body = {data: createdPostLike, error: []};
     }
-    const updatedPost = await Post.update(
-      {likes},
-      {where: {postId}, returning: true, plain: true}
-    );
-    ctx.body = {data: updatedPost[1], error: ""};
-    ctx.status = 200;
-    return ctx;
   } catch (err) {
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);

@@ -9,12 +9,6 @@ module.exports = {
         autoIncrement: true,
         unique: true,
       },
-      userId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-        primaryKey: true,
-      },
       username: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -46,11 +40,11 @@ module.exports = {
         allowNull: false,
       },
       followers: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: false,
       },
       following: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: false,
       },
       createdAt: {

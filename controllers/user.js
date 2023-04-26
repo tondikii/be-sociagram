@@ -2,7 +2,6 @@ const {User} = require("../models");
 const {Op} = require("sequelize");
 const {comparePassword} = require("../helpers/bcrypt");
 const {sign} = require("../helpers/jwt");
-const {uuidGenerator} = require("../helpers/uuid");
 const ImageKit = require("imagekit");
 const public_key = process.env.PUBLICKEY;
 const private_key = process.env.PRIVATEKEY;
@@ -11,15 +10,10 @@ const signUp = async (ctx) => {
   try {
     const {request} = ctx;
     const {username, email, password} = request.body;
-    let userId = "";
-    if (username && email && password) {
-      userId = uuidGenerator();
-    }
     const user = await User.create({
       username,
       email,
       password,
-      userId,
     });
     ctx.body = {data: user, error: []};
     ctx.status = 201;
@@ -34,28 +28,28 @@ const signIn = async (ctx) => {
   try {
     const {request} = ctx;
     const {email, password} = request.body;
-    console.log({email, password});
     if (!email || !password) throw {name: "Bad Request Sign In"};
-    const user = await User.findOne({where: {email}});
-    console.log({user});
+    const user = await User.findOne({
+      where: {email},
+      attributes: {exclude: ["followers", "following"]},
+    });
     if (!user) throw {name: "Invalid Email"};
     if (!comparePassword(password, user.password))
       throw {name: "Invalid Password"};
     const payload = {
       id: user.id,
-      userId: user.userId,
     };
     const token = sign(payload);
+    const data = {accessToken: token, ...user?.dataValues};
+    delete data.password;
+    delete data.password;
+    delete data.password;
     ctx.status = 200;
     ctx.body = {
-      data: {
-        accessToken: token,
-        ...user?.dataValues,
-      },
+      data,
       error: "",
     };
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -67,6 +61,7 @@ const find = async (ctx) => {
     const {search = ""} = request?.query;
     const users = await User.findAndCountAll({
       where: {username: {[Op.iLike]: `%${search}%`}},
+      attributes: {exclude: ["password", "followers", "following"]},
     });
     ctx.status = 200;
     ctx.body = {data: users, error: ""};
@@ -98,7 +93,7 @@ const editProfile = async (ctx) => {
   try {
     const {request, req, files} = ctx;
     const {
-      user: {userId},
+      user: {id},
     } = request;
     const file = files?.file;
     let avatar = request.body?.avatar;
@@ -123,7 +118,7 @@ const editProfile = async (ctx) => {
         bio,
         gender,
       },
-      {where: {userId}, returning: true, plain: true}
+      {where: {id}, returning: true, plain: true}
     );
     ctx.status = 200;
     ctx.body = {data: updatedUser[1], error: ""};
@@ -138,34 +133,44 @@ const followUnFollow = async (ctx) => {
   try {
     const {request} = ctx;
     const {
-      user: {userId, following},
+      user: {id, following},
     } = request;
-    const {userId: targetUserId} = request.body;
-    const foundOtherUser = await User.findOne({where: {userId: targetUserId}});
+    const {id: targetUserId} = request.body;
+    if (targetUserId === id) {
+      throw {
+        name: "Invalid User",
+      };
+    }
+    const foundTargetUser = await User.findByPk(targetUserId);
+    if (!foundTargetUser) {
+      throw {
+        name: "User Not Found",
+      };
+    }
     const isFollowing = following.find((id) => id === targetUserId);
     let payloadFollowing = [];
-    let payloadFollowers = foundOtherUser?.followers || [];
+    let payloadFollowers = foundTargetUser?.followers || [];
     if (isFollowing) {
       payloadFollowing = [...payloadFollowing].filter(
-        (id) => id !== targetUserId
+        (eId) => eId !== targetUserId
       );
-      payloadFollowers = [...payloadFollowers].filter((id) => id !== userId);
+      payloadFollowers = [...payloadFollowers].filter((eId) => eId !== id);
     } else {
       payloadFollowing = [...payloadFollowing, targetUserId];
-      payloadFollowers = [...payloadFollowers, userId];
+      payloadFollowers = [...payloadFollowers, id];
     }
     const updatedUser = await User.update(
       {
         following: payloadFollowing,
       },
-      {where: {userId}, returning: true, plain: true}
+      {where: {id}, returning: true, plain: true}
     );
     if (updatedUser) {
       const updatedOtherUser = await User.update(
         {
           followers: payloadFollowers,
         },
-        {where: {userId: targetUserId}, returning: true, plain: true}
+        {where: {id: targetUserId}, returning: true, plain: true}
       );
       ctx.body = {data: updatedOtherUser[1], error: ""};
       return ctx;
@@ -179,17 +184,21 @@ const followUnFollow = async (ctx) => {
 const followers = async (ctx) => {
   try {
     const {request} = ctx;
-    const {username} = request.params;
-    const targetUser = await User.findOne({where: {username}});
+    const {id} = request.params;
+    const targetUser = await User.findByPk(id);
+    if (!targetUser) {
+      throw {
+        name: "User Not Found",
+      };
+    }
     let followers = targetUser?.followers;
     const users = await User.findAll();
     const filteredUsers = users.filter(({dataValues}) =>
-      followers.find((id) => id === dataValues?.userId)
+      followers.find((eId) => eId === dataValues?.id)
     );
-    console.log({filteredUsers});
     ctx.status = 200;
-    ctx.body = {data: filteredUsers};
-  } catch (error) {
+    ctx.body = {data: filteredUsers, error: ""};
+  } catch (err) {
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -198,17 +207,21 @@ const followers = async (ctx) => {
 const following = async (ctx) => {
   try {
     const {request} = ctx;
-    const {username} = request.params;
-    const targetUser = await User.findOne({where: {username}});
+    const {id} = request.params;
+    const targetUser = await User.findByPk(id);
+    if (!targetUser) {
+      throw {
+        name: "User Not Found",
+      };
+    }
     let following = targetUser?.following;
     const users = await User.findAll();
     const filteredUsers = users.filter(({dataValues}) =>
-      following.find((id) => id === dataValues?.userId)
+      following.find((id) => id === dataValues?.id)
     );
-    console.log({filteredUsers});
     ctx.status = 200;
-    ctx.body = {data: filteredUsers};
-  } catch (error) {
+    ctx.body = {data: filteredUsers, error: ""};
+  } catch (err) {
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
