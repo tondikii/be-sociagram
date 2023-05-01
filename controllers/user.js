@@ -1,4 +1,4 @@
-const {User} = require("../models");
+const {User, Post, PostComment} = require("../models");
 const {Op} = require("sequelize");
 const {comparePassword} = require("../helpers/bcrypt");
 const {sign} = require("../helpers/jwt");
@@ -75,8 +75,38 @@ const find = async (ctx) => {
 const detail = async (ctx) => {
   try {
     const {request} = ctx;
+    const {
+      user: {id},
+    } = request;
     const {username} = request.params;
-    const foundUser = await User.findOne({where: {username}});
+    let foundUser;
+    if (!username) {
+      foundUser = await User.findOne({
+        where: {id},
+        attributes: {exclude: ["password"]},
+        include: [
+          {
+            model: Post,
+            include: {
+              model: PostComment,
+            },
+          },
+        ],
+      });
+    } else {
+      foundUser = await User.findOne({
+        where: {username},
+        attributes: {exclude: ["password"]},
+        include: [
+          {
+            model: Post,
+            include: {
+              model: PostComment,
+            },
+          },
+        ],
+      });
+    }
     if (!foundUser) {
       throw {name: "Invalid Profile"};
     }
@@ -91,7 +121,7 @@ const detail = async (ctx) => {
 
 const editProfile = async (ctx) => {
   try {
-    const {request, req, files} = ctx;
+    const {request, files} = ctx;
     const {
       user: {id},
     } = request;

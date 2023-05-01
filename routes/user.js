@@ -21,6 +21,7 @@ router.use(authentication);
 router.get("/find", find);
 router.get("/followers/:id", followers);
 router.get("/following/:id", following);
+router.get("/", detail);
 router.get("/:username", detail);
 router.put(
   "/edit",
