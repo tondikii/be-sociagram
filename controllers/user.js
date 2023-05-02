@@ -1,4 +1,4 @@
-const {User, Post, PostComment} = require("../models");
+const {User, Post, PostComment, PostLike} = require("../models");
 const {Op} = require("sequelize");
 const {comparePassword} = require("../helpers/bcrypt");
 const {sign} = require("../helpers/jwt");
@@ -80,6 +80,18 @@ const detail = async (ctx) => {
     } = request;
     const {username} = request.params;
     let foundUser;
+    const excludeIds = ["UserId", "PostId"];
+    const excludeDate = ["createdAt", "updatedAt"];
+    const excludePostCommentUser = [
+      "password",
+      "followers",
+      "following",
+      "gender",
+      "bio",
+      "email",
+      "name",
+      ...excludeDate,
+    ];
     if (!username) {
       foundUser = await User.findOne({
         where: {id},
@@ -87,9 +99,19 @@ const detail = async (ctx) => {
         include: [
           {
             model: Post,
-            include: {
-              model: PostComment,
-            },
+            include: [
+              {
+                model: PostComment,
+                attributes: {exclude: [...excludeIds, ...excludeDate]},
+                include: [
+                  {model: User, attributes: {exclude: excludePostCommentUser}},
+                ],
+              },
+              {
+                model: PostLike,
+                attributes: {exclude: excludeDate},
+              },
+            ],
           },
         ],
       });
@@ -100,9 +122,19 @@ const detail = async (ctx) => {
         include: [
           {
             model: Post,
-            include: {
-              model: PostComment,
-            },
+            include: [
+              {
+                model: PostComment,
+                attributes: {exclude: [...excludeIds, ...excludeDate]},
+                include: [
+                  {model: User, attributes: {exclude: excludePostCommentUser}},
+                ],
+              },
+              {
+                model: PostLike,
+                attributes: {exclude: excludeDate},
+              },
+            ],
           },
         ],
       });

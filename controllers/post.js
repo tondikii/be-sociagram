@@ -41,6 +41,7 @@ const fetchPosts = async (ctx, next) => {
           model: User,
         },
         {model: PostComment},
+        {model: PostLike},
       ],
       where,
       order: [["createdAt", "DESC"]],
@@ -77,7 +78,6 @@ const likeUnLike = async (ctx) => {
       ctx.body = {data: createdPostLike, error: []};
     }
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }

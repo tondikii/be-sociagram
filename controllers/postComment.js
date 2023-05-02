@@ -16,7 +16,6 @@ const createComment = async (ctx) => {
     ctx.body = {data: createdComment, error: []};
     return ctx;
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
@@ -36,7 +35,6 @@ const fetchPostComments = async (ctx) => {
     ctx.body = {data: postComments, error: ""};
     ctx.status = 200;
   } catch (err) {
-    console.log({err});
     ctx.body = {data: {}};
     ctx.app.emit("error", err, ctx);
   }
