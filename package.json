@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development npx nodemon app.js",
-    "start": "node app.js",
+    "dev": "NODE_ENV=development npx nodemon index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "restart": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate"
   },
