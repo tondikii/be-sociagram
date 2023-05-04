@@ -88,6 +88,18 @@ const postsLiked = async (ctx) => {
     const {
       user: {id},
     } = ctx.request;
+    const excludeIds = ["UserId", "PostId"];
+    const excludeDate = ["createdAt", "updatedAt"];
+    const excludePostCommentUser = [
+      "password",
+      "followers",
+      "following",
+      "gender",
+      "bio",
+      "email",
+      "name",
+      ...excludeDate,
+    ];
     const posts = await PostLike.findAll({
       include: [
         {
@@ -95,15 +107,20 @@ const postsLiked = async (ctx) => {
           include: [
             {
               model: PostComment,
+              attributes: {exclude: [...excludeIds, ...excludeDate]},
+              include: [
+                {model: User, attributes: {exclude: excludePostCommentUser}},
+              ],
+            },
+            {
+              model: PostLike,
+              attributes: {exclude: excludeDate},
             },
           ],
         },
       ],
       where: {UserId: id},
     });
-    // const filteredPosts = posts.filter(({dataValues}) =>
-    //   dataValues?.likes.find((id) => id === userId)
-    // );
     ctx.status = 200;
     ctx.body = {data: posts};
   } catch (err) {
