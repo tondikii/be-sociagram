@@ -33,14 +33,36 @@ const fetchPosts = async (ctx, next) => {
       const foundUser = await User.findOne({where: {username}});
       where.UserId = foundUser?.id || 0;
     }
+    const excludeUser = [
+      "password",
+      "followers",
+      "following",
+      "gender",
+      "bio",
+      "email",
+      "name",
+      "createdAt",
+      "updatedAt",
+    ];
     const posts = await Post.findAndCountAll({
       limit,
       offset,
       include: [
         {
           model: User,
+          attributes: {exclude: excludeUser},
         },
-        {model: PostComment},
+        {
+          model: PostComment,
+          include: [
+            {
+              model: User,
+              attributes: {
+                exclude: excludeUser,
+              },
+            },
+          ],
+        },
         {model: PostLike},
       ],
       where,
@@ -90,7 +112,7 @@ const postsLiked = async (ctx) => {
     } = ctx.request;
     const excludeIds = ["UserId", "PostId"];
     const excludeDate = ["createdAt", "updatedAt"];
-    const excludePostCommentUser = [
+    const excludeUser = [
       "password",
       "followers",
       "following",
@@ -106,11 +128,13 @@ const postsLiked = async (ctx) => {
           model: Post,
           include: [
             {
+              model: User,
+              attributes: {exclude: excludeUser},
+            },
+            {
               model: PostComment,
               attributes: {exclude: [...excludeIds, ...excludeDate]},
-              include: [
-                {model: User, attributes: {exclude: excludePostCommentUser}},
-              ],
+              include: [{model: User, attributes: {exclude: excludeUser}}],
             },
             {
               model: PostLike,

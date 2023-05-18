@@ -138,6 +138,7 @@ const detail = async (ctx) => {
           },
         ],
       });
+      foundUser?.Posts.sort((a, b) => b.id - a.id);
     }
     if (!foundUser) {
       throw {name: "Invalid Profile"};
