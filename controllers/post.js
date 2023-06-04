@@ -91,13 +91,13 @@ const likeUnLike = async (ctx) => {
         },
         force: true,
       });
-      ctx.body = {data: null, error: []};
+      ctx.body = {data: foundPostLike, error: []};
     } else {
-      const createdPostLike = await PostLike.create({
+      const postLike = await PostLike.create({
         PostId,
         UserId,
       });
-      ctx.body = {data: createdPostLike, error: []};
+      ctx.body = {data: postLike, error: []};
     }
   } catch (err) {
     ctx.body = {data: {}};
