@@ -13,7 +13,14 @@ const createComment = async (ctx) => {
       comment,
       UserId: id,
     });
-    ctx.body = {data: createdComment, error: []};
+    const foundComment = await PostComment.findByPk(createdComment?.id, {
+      include: [
+        {
+          model: User,
+        },
+      ],
+    });
+    ctx.body = {data: foundComment, error: []};
     return ctx;
   } catch (err) {
     ctx.body = {data: {}};
