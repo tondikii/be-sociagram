@@ -16,6 +16,10 @@
   "production": {
     "use_env_variable": "POSTGRES_URL",
     "dialect": "postgres",
-    "protocol": "postgres"
+    "protocol": "postgres",
+    "password": "POSTGRES_PASSWORD",
+    "database": "POSTGRES_DATABASE",
+    "host": "POSTGRES_HOST",
+    "username": "POSTGRES_USER"
   }
 }
