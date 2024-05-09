@@ -2,6 +2,7 @@ const KoaRouter = require("koa-router");
 const userRoutes = require("./user");
 const postRoutes = require("./post");
 const postCommentRoutes = require("./postComment");
+const userChatRoutes = require("./userChat");
 
 const router = new KoaRouter({prefix: "/api"});
 
@@ -11,5 +12,7 @@ router.use(postRoutes.routes());
 router.use(postRoutes.allowedMethods());
 router.use(postCommentRoutes.routes());
 router.use(postCommentRoutes.allowedMethods());
+router.use(userChatRoutes.routes());
+router.use(userChatRoutes.allowedMethods());
 
 module.exports = router;

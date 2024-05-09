@@ -4,8 +4,10 @@ const Koa = require("koa");
 const cors = require("@koa/cors");
 const json = require("koa-json");
 const bodyParser = require("koa-bodyparser");
+
 const routes = require("./routes");
 const errorsHandler = require("./middlewares/errorsHandler");
+const socketServer = require("./helpers/socket");
 
 const port = process.env.PORT || 3002;
 const app = new Koa();
@@ -38,5 +40,6 @@ app.use(routes.allowedMethods());
 app.on("error", errorsHandler);
 
 app.listen(port, () => console.log(`Server started at port ${port}...`));
+socketServer();
 
 module.exports = app;
