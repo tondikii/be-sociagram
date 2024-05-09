@@ -11,7 +11,8 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  // '?sslmode=require' additional string if needed for the database url 
+  sequelize = new Sequelize(process.env[config.use_env_variable], {...config, dialectModule: require('pg')});
 } else {
   sequelize = new Sequelize(
     config.database,
