@@ -14,6 +14,8 @@ const app = new Koa();
 
 app.use(cors());
 
+// Middleware Koa
+
 // json formatter
 app.use(json());
 
@@ -39,7 +41,9 @@ app.use(routes.allowedMethods());
 
 app.on("error", errorsHandler);
 
-app.listen(port, () => console.log(`Server started at port ${port}...`));
-socketServer(app);
+const server = app.listen(port, () =>
+  console.log(`Server started at port ${port}...`)
+);
+socketServer(server);
 
 module.exports = app;

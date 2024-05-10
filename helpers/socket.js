@@ -1,13 +1,10 @@
 const socketIO = require("socket.io");
-const {createServer} = require("http");
 const {UserChat} = require("../models");
-const port = process.env.SOCKET_PORT || 3003;
 
 // Keep track of connected clients and their usernames
 const clients = {};
 
-const socketServer = (app) => {
-  const server = createServer(app.callback());
+const socketServer = (server) => {
   const io = socketIO(server, {
     cors: {
       origin:
@@ -83,8 +80,6 @@ const socketServer = (app) => {
       delete clients[socket.id];
     });
   });
-
-  server.listen(port, () => console.log(`Server started at port ${port}...`));
 };
 
 module.exports = socketServer;
