@@ -5,9 +5,9 @@ const cors = require("@koa/cors");
 const json = require("koa-json");
 const bodyParser = require("koa-bodyparser");
 
-const routes = require("./routes");
-const errorsHandler = require("./middlewares/errorsHandler");
-const socketServer = require("./helpers/socket");
+const routes = require("../routes");
+const errorsHandler = require("../middlewares/errorsHandler");
+const socketServer = require("../helpers/socket");
 
 const port = process.env.PORT || 3002;
 const app = new Koa();

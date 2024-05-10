@@ -2,10 +2,10 @@
   "name": "be-sociagram",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
-    "dev": "NODE_ENV=development npx nodemon index.js",
-    "start": "node index.js",
+    "dev": "NODE_ENV=development npx nodemon api/index.js",
+    "start": "node api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "restart": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate"
   },
