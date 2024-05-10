@@ -4,7 +4,7 @@ const postRoutes = require("./post");
 const postCommentRoutes = require("./postComment");
 const userChatRoutes = require("./userChat");
 
-const router = new KoaRouter({prefix: "/api"});
+const router = new KoaRouter();
 
 router.use(userRoutes.routes());
 router.use(userRoutes.allowedMethods());
