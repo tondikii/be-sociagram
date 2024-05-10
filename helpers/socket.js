@@ -7,7 +7,7 @@ const port = process.env.SOCKET_PORT || 3003;
 const clients = {};
 
 const socketServer = (app) => {
-  const server = createServer(app);
+  const server = createServer(app.callback());
   const io = socketIO(server, {
     cors: {
       origin:

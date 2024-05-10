@@ -40,6 +40,6 @@ app.use(routes.allowedMethods());
 app.on("error", errorsHandler);
 
 app.listen(port, () => console.log(`Server started at port ${port}...`));
-socketServer();
+socketServer(app);
 
 module.exports = app;
