@@ -40,18 +40,31 @@ const socketServer = (app) => {
           (key) => clients[key] === userIdReceiver
         );
 
-        if (userIdSender && toSocketId && message) {
-          io.to(toSocketId).emit("chat_message", {
-            UserId: userIdSender,
-            UserIdReceiver: userIdReceiver,
-            message,
-            User: {
+        if (userIdSender && message) {
+          if (toSocketId) {
+            io.to(toSocketId).emit("chat_message", {
               UserId: userIdSender,
-              username,
-              name,
-              avatar,
-            },
-          });
+              UserIdReceiver: userIdReceiver,
+              messages: [
+                {
+                  UserId: userIdSender,
+                  UserIdReceiver: userIdReceiver,
+                  usernameReceiver,
+                  nameReceiver,
+                  avatarReceiver,
+                  message: message,
+                  createdAt: new Date().toISOString(),
+                },
+              ],
+              User: {
+                id: userIdSender,
+                username,
+                name,
+                avatar,
+              },
+            });
+          }
+
           UserChat.create({
             UserId: userIdSender,
             UserIdReceiver: userIdReceiver,
@@ -60,18 +73,13 @@ const socketServer = (app) => {
             avatarReceiver,
             message,
           })
-            .then((res) => {
-              console.log("CREATED", res);
-            })
-            .catch((err) => {
-              console.log("ERROR CATCH", err);
-            });
+            .then(() => {})
+            .catch(() => {});
         }
       }
     );
 
     socket.on("disconnect", () => {
-      console.log("Client disconnected");
       delete clients[socket.id];
     });
   });

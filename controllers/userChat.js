@@ -10,6 +10,7 @@ const fetchChat = async (ctx) => {
       where: {
         [Op.or]: [{UserId: id}, {UserIdReceiver: id}],
       },
+      order: [["createdAt", "ASC"]],
       include: [
         {
           model: User,
@@ -34,7 +35,7 @@ const fetchChat = async (ctx) => {
     );
 
     const temp = [];
-    const result = userChatObjects.reduce((acc, obj) => {
+    let result = userChatObjects.reduce((acc, obj) => {
       const userIndex = acc.findIndex((item) => item.User.id === obj.UserId);
 
       let userReceiverIndex = -1;
@@ -59,6 +60,7 @@ const fetchChat = async (ctx) => {
         if (userReceiverIndex === -1) {
           temp.push({
             User: {
+              id: obj.UserIdReceiver,
               username: obj.usernameReceiver,
               name: obj.nameReceiver,
               avatar: obj.avatarReceiver,
@@ -69,11 +71,34 @@ const fetchChat = async (ctx) => {
           temp[userReceiverIndex].messages.push({...obj, User: undefined});
         }
       }
+
       return acc;
     }, []);
 
+    if (temp.length > 0) {
+      let isNeedSort = false;
+      temp.forEach((e) => {
+        const foundIndex = result.findIndex((e2) => e?.User.id === e2?.User.id);
+        if (foundIndex !== -1) {
+          result[foundIndex].messages = [
+            ...result[foundIndex].messages,
+            ...e.messages,
+          ].sort((a, b) => a.id - b.id);
+        } else {
+          result = [...result, e];
+          isNeedSort = true;
+        }
+      });
+      if (isNeedSort) {
+        result = result.sort(
+          (a, b) => b?.messages?.[0]?.id - a?.messages?.[0]?.id
+        );
+      }
+      result = [...result];
+    }
+
     ctx.status = 200;
-    ctx.body = {data: [...result, ...temp], error: ""};
+    ctx.body = {data: result, error: ""};
     return ctx;
   } catch (err) {
     ctx.body = {data: []};
