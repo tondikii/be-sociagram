@@ -6,6 +6,17 @@ const userChatRoutes = require("./userChat");
 
 const router = new KoaRouter();
 
+router.get("/", async (ctx) => {
+  try {
+    ctx.status = 200;
+    ctx.body = "Welcome to Sociagram";
+    return ctx;
+  } catch (error) {
+    ctx.body = "Error Sociagram on Vercel";
+    return ctx;
+  }
+});
+
 router.use(userRoutes.routes());
 router.use(userRoutes.allowedMethods());
 router.use(postRoutes.routes());
