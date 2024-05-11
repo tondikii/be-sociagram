@@ -5,7 +5,9 @@ const cors = require("@koa/cors");
 const json = require("koa-json");
 const bodyParser = require("koa-bodyparser");
 
-const routes = require("../routes");
+const KoaRouter = require("koa-router");
+// const routes = require("../routes");
+const router = new KoaRouter();
 const errorsHandler = require("../middlewares/errorsHandler");
 const socketServer = require("../helpers/socket");
 
@@ -36,8 +38,19 @@ app.use(async (ctx, next) => {
   ctx.set("X-Response-Time", `${ms}ms`);
 });
 
-app.use(routes.routes());
-app.use(routes.allowedMethods());
+router.get("/", async (ctx) => {
+  try {
+    ctx.status = 200;
+    ctx.body = "Welcome to Sociagram";
+    return ctx;
+  } catch (error) {
+    ctx.body = "Error Sociagram on Vercel";
+    return ctx;
+  }
+});
+
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 app.on("error", errorsHandler);
 
