@@ -1,8 +1,8 @@
 const KoaRouter = require("koa-router");
-const userRoutes = require("./user");
-const postRoutes = require("./post");
-const postCommentRoutes = require("./postComment");
-const userChatRoutes = require("./userChat");
+// const userRoutes = require("./user");
+// const postRoutes = require("./post");
+// const postCommentRoutes = require("./postComment");
+// const userChatRoutes = require("./userChat");
 
 const router = new KoaRouter();
 
