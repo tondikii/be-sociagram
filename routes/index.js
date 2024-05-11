@@ -17,13 +17,13 @@ router.get("/", async (ctx) => {
   }
 });
 
-router.use(userRoutes.routes());
-router.use(userRoutes.allowedMethods());
-router.use(postRoutes.routes());
-router.use(postRoutes.allowedMethods());
-router.use(postCommentRoutes.routes());
-router.use(postCommentRoutes.allowedMethods());
-router.use(userChatRoutes.routes());
-router.use(userChatRoutes.allowedMethods());
+// router.use(userRoutes.routes());
+// router.use(userRoutes.allowedMethods());
+// router.use(postRoutes.routes());
+// router.use(postRoutes.allowedMethods());
+// router.use(postCommentRoutes.routes());
+// router.use(postCommentRoutes.allowedMethods());
+// router.use(userChatRoutes.routes());
+// router.use(userChatRoutes.allowedMethods());
 
 module.exports = router;
