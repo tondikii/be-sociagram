@@ -32,7 +32,10 @@ const multerMiddleware = async (ctx, next) => {
     });
   })
     .then(() => {
-      ctx.file = ctx.req.file; // Pass the uploaded file to ctx for use in controllers
+      // Pass the uploaded file to ctx for use in controllers
+      ctx.file = ctx.req.file;
+      // Pass other form data to ctx for use in controllers
+      ctx.bodyData = ctx.req.body;
       return next();
     })
     .catch((err) => {

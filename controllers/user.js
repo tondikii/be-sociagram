@@ -158,8 +158,8 @@ const editProfile = async (ctx) => {
     const {
       user: {id},
     } = request;
-    let avatar = request.body?.avatar;
-    const {name, username, bio, gender} = request.body;
+    let avatar = ctx?.bodyData?.avatar;
+    const {name, username, bio, gender} = ctx?.bodyData || {};
     if (file) {
       const imagekit = new ImageKit({
         publicKey: public_key,

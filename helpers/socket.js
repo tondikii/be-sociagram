@@ -7,16 +7,17 @@ const clients = {};
 const socketServer = (server) => {
   const io = socketIO(server, {
     cors: {
-      origin:
-        process.env.NODE_ENV === "production"
-          ? "https://sociagram.vercel.app"
-          : "http://localhost:3001",
+      origin: ["https://sociagram.vercel.app", "http://localhost:3001"],
+      // process.env.NODE_ENV === "production"
+      //   ? "https://sociagram.vercel.app"
+      //   : "http://localhost:3001",
       methods: ["GET", "POST"],
     },
   });
 
   io.on("connection", (socket) => {
     socket.on("set_id", (userId) => {
+      console.log("SET_ID", userId);
       clients[socket.id] = userId;
     });
 
