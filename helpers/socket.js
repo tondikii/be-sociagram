@@ -78,6 +78,8 @@ const socketServer = (httpServer) => {
     });
   });
 
+  setInterval(() => io.emit("time", new Date().toTimeString()), 1000);
+
   return httpServer;
 };
 
