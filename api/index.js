@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const Koa = require("koa");
+const {createServer} = require("http");
 const cors = require("@koa/cors");
 const json = require("koa-json");
 const bodyParser = require("koa-bodyparser");
@@ -41,7 +42,12 @@ app.use(routes.allowedMethods());
 
 app.on("error", errorsHandler);
 
-app.listen(port, () => console.log(`Server started at port ${port}...`));
-socketServer(app, port);
+const httpServer = createServer(app.callback());
+
+socketServer(httpServer);
+
+httpServer.listen(port, () => {
+  console.log(`Server started at port ${port}`);
+});
 
 module.exports = app;

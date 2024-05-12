@@ -1,20 +1,13 @@
 const {Server} = require("socket.io");
 const {UserChat} = require("../models");
-const {createServer} = require("http");
 
 // Keep track of connected clients and their usernames
 const clients = {};
 
-const socketServer = (app, port) => {
-  const socketPort =
-    process.env.NODE_ENV === "production" ? port : process.env.SOCKET_PORT;
-  const server = createServer(app);
-  const io = new Server(server, {
+const socketServer = (httpServer) => {
+  const io = new Server(httpServer, {
     cors: {
       origin: ["https://sociagram.vercel.app", "http://localhost:3001"],
-      // process.env.NODE_ENV === "production"
-      //   ? "https://sociagram.vercel.app"
-      //   : "http://localhost:3001",
       methods: ["GET", "POST"],
     },
   });
@@ -85,9 +78,7 @@ const socketServer = (app, port) => {
     });
   });
 
-  server.listen(socketPort, () => {
-    console.log(`Socket Server started at port ${socketPort}`);
-  });
+  return httpServer;
 };
 
 module.exports = socketServer;
