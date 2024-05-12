@@ -1,11 +1,11 @@
-const socketIO = require("socket.io");
+const {Server} = require("socket.io");
 const {UserChat} = require("../models");
 
 // Keep track of connected clients and their usernames
 const clients = {};
 
 const socketServer = (server) => {
-  const io = socketIO(server, {
+  const io = new Server(server, {
     cors: {
       origin: ["https://sociagram.vercel.app", "http://localhost:3001"],
       // process.env.NODE_ENV === "production"
@@ -17,7 +17,6 @@ const socketServer = (server) => {
 
   io.on("connection", (socket) => {
     socket.on("set_id", (userId) => {
-      console.log("SET_ID", userId);
       clients[socket.id] = userId;
     });
 
