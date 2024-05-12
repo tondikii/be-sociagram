@@ -23,11 +23,7 @@ router.get("/followers/:id", followers);
 router.get("/following/:id", following);
 router.get("/", detail);
 router.get("/:username", detail);
-router.put(
-  "/edit",
-  multerImage.fields([{name: "file", maxCount: 1}]),
-  editProfile
-);
+router.put("/edit", multerImage, editProfile);
 router.put("/follow", followUnFollow);
 
 module.exports = router;

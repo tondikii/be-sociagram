@@ -154,11 +154,10 @@ const detail = async (ctx) => {
 
 const editProfile = async (ctx) => {
   try {
-    const {request, files} = ctx;
+    const {request, file} = ctx;
     const {
       user: {id},
     } = request;
-    const file = files?.file;
     let avatar = request.body?.avatar;
     const {name, username, bio, gender} = request.body;
     if (file) {
@@ -168,8 +167,8 @@ const editProfile = async (ctx) => {
         urlEndpoint: "https://ik.imagekit.io/fnzl2pmmqv2d",
       });
       const uploadImage = await imagekit.upload({
-        file: file[0].buffer, //required
-        fileName: file[0].originalname, //required
+        file: file.buffer, //required
+        fileName: file.originalname, //required
       });
       avatar = uploadImage?.url;
     }

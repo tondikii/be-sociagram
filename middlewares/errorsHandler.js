@@ -63,6 +63,7 @@ const errorsHandler = (err, ctx) => {
       };
       return ctx;
     case "MulterError":
+    case "Error File Size":
       ctx.status = 400;
       ctx.body = {
         data: ctx?.body?.data || null,
