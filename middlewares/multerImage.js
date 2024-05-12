@@ -2,13 +2,13 @@ const koaMulter = require("@koa/multer");
 
 const multerImage = koaMulter({
   limits: {
-    fileSize: 1 * 1024 * 1024,
+    fileSize: 2 * 1024 * 1024, // Limit file size up to 2MB
   },
-  async fileFilter(ctx, file, cb) {
+  fileFilter: (ctx, file, cb) => {
     if (!file.originalname.match(/.(jpg|jpeg|png)$/)) {
       return cb({name: "Error File Type"});
     }
-    cb(undefined, true);
+    cb(null, true);
   },
 });
 

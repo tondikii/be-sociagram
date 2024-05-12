@@ -4,13 +4,13 @@ const {
   signIn,
   find,
   detail,
-  // editProfile,
+  editProfile,
   followUnFollow,
   followers,
   following,
 } = require("../controllers/user");
 const authentication = require("../middlewares/authentication");
-// const multerImage = require("../middlewares/multerImage");
+const multerImage = require("../middlewares/multerImage");
 
 const router = new KoaRouter({prefix: "/users"});
 
@@ -23,16 +23,11 @@ router.get("/followers/:id", followers);
 router.get("/following/:id", following);
 router.get("/", detail);
 router.get("/:username", detail);
-// router.put(
-//   "/edit",
-//   multerImage.fields([
-//     {
-//       name: "file",
-//       maxCount: 1,
-//     },
-//   ]),
-//   editProfile
-// );
+router.put(
+  "/edit",
+  multerImage.fields([{name: "file", maxCount: 1}]),
+  editProfile
+);
 router.put("/follow", followUnFollow);
 
 module.exports = router;
