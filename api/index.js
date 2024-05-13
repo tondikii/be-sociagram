@@ -14,8 +14,8 @@ const socketServer = require("../helpers/socket");
 const port = process.env.PORT || 3002;
 const app = new Koa();
 const options = {
-  key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('server.cert')
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.cert')
 };
 
 
