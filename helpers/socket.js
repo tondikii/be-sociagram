@@ -4,8 +4,8 @@ const {UserChat} = require("../models");
 // Keep track of connected clients and their usernames
 const clients = {};
 
-const socketServer = (httpServer) => {
-  const io = new Server(httpServer, {
+const socketServer = (server) => {
+  const io = new Server(server, {
     cors: {
       origin: ["https://sociagram.vercel.app", "http://localhost:3001"],
       methods: ["GET", "POST"],
@@ -80,7 +80,7 @@ const socketServer = (httpServer) => {
 
   setInterval(() => io.emit("time", new Date().toTimeString()), 1000);
 
-  return httpServer;
+  return server;
 };
 
 module.exports = socketServer;
