@@ -7,7 +7,7 @@ const clients = {};
 const socketServer = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: ["https://sociagram.vercel.app", "http://localhost:3001"],
+      origin: '*',
       methods: ["GET", "POST"],
     },
   });
