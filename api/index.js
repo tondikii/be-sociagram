@@ -3,13 +3,9 @@ require("dotenv").config();
 const Koa = require("koa");
 const {createServer} = require("http");
 
-// for using https enable this next line, key, and cert
-// const {createServer} = require("https");
-
 const cors = require("@koa/cors");
 const json = require("koa-json");
 const bodyParser = require("koa-bodyparser");
-// const fs = require("fs");
 
 const routes = require("../routes");
 const errorsHandler = require("../middlewares/errorsHandler");
@@ -17,10 +13,6 @@ const socketServer = require("../helpers/socket");
 
 const port = process.env.PORT || 3002;
 const app = new Koa();
-// const options = {
-//   key: fs.readFileSync('server.key'),
-//   cert: fs.readFileSync('server.cert')
-// };
 
 app.use(cors());
 
