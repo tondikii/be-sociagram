@@ -9,7 +9,6 @@ const bodyParser = require("koa-bodyparser");
 
 const routes = require("../routes");
 const errorsHandler = require("../middlewares/errorsHandler");
-const socketServer = require("../helpers/socket");
 
 const port = process.env.PORT || 3002;
 const app = new Koa();
@@ -44,8 +43,6 @@ app.use(routes.allowedMethods());
 app.on("error", errorsHandler);
 
 const server = createServer(app.callback());
-
-socketServer(server);
 
 server.listen(port, () => {
   console.log(`Server started at port ${port}`);
